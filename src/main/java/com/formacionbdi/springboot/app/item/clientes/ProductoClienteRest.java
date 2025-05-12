@@ -18,6 +18,9 @@ public interface ProductoClienteRest {
 	@GetMapping("/listar")
 	public List<Producto> listar();
 	
+	@GetMapping("/endpointerror/{id}")
+	public Producto endpointerror(@PathVariable Long id);
+	
 	@GetMapping("/ver/{id}")
 	public Producto detalle(@PathVariable Long id);
 	

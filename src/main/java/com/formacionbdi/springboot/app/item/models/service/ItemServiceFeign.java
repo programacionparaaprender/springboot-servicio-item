@@ -22,6 +22,11 @@ public class ItemServiceFeign implements ItemService {
 	}
 
 	@Override
+	public Item findByIdError(Long id, Integer cantidad) {
+		return new Item(clienteFeign.endpointerror(id), cantidad);
+	}
+	
+	@Override
 	public Item findById(Long id, Integer cantidad) {
 		return new Item(clienteFeign.detalle(id), cantidad);
 	}

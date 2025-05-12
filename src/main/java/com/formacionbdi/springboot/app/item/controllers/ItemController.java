@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,14 +52,36 @@ public class ItemController {
 	private String texto;
 	
 	@GetMapping("/listar")
-	public List<Item> listar(){
+	public List<Item> listar(@RequestHeader(name="Authorization", required=false) String autorization, @RequestHeader(name="token-request", required=false) String token){
+		log.info("autorization: " + autorization);
+		log.info("token: " + token);
 		return itemService.findAll();
+	}
+	
+	
+	@HystrixCommand(fallbackMethod = "metodoError")
+	@GetMapping("/endpointerror/{id}/cantidad/{cantidad}")
+	public Item endpointerror(@PathVariable Long id, @PathVariable Integer cantidad) {
+		return itemService.findByIdError(id, cantidad);
 	}
 	
 	@HystrixCommand(fallbackMethod = "metodoAlternativo")
 	@GetMapping("/ver/{id}/cantidad/{cantidad}")
 	public Item detalle(@PathVariable Long id, @PathVariable Integer cantidad) {
 		return itemService.findById(id, cantidad);
+	}
+	
+	public Item metodoError(Long id, Integer cantidad) {
+		Item item = new Item();
+		Producto producto = new Producto();
+		
+		item.setCantidad(cantidad);
+		producto.setId(id);
+		producto.setNombre("Camara Sony Pruebas");
+		producto.setPrecio(500.00);
+		item.setProducto(producto);
+		return item;
+		
 	}
 
 	public Item metodoAlternativo(Long id, Integer cantidad) {
